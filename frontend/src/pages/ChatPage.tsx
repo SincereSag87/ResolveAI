@@ -164,7 +164,12 @@ export function ChatPage() {
         title="AI Support Chat"
         description="Troubleshoot employee issues, surface source-backed answers, and prepare escalations when needed."
       />
-      {error ? <div className="alert alert--error">{error}</div> : null}
+      {error ? (
+        <div className="alert alert--error">
+          <strong>Support chat API unavailable</strong>
+          <span>{error}</span>
+        </div>
+      ) : null}
       <section className="chat-workspace">
         <aside className="conversation-panel">
           <div className="panel-header">
@@ -174,6 +179,7 @@ export function ChatPage() {
           <form className="conversation-form" onSubmit={handleStartConversation}>
             <input
               aria-label="Conversation title"
+              disabled={isSending}
               value={newTitle}
               onChange={(event) => setNewTitle(event.target.value)}
             />
@@ -182,12 +188,20 @@ export function ChatPage() {
             </button>
           </form>
           <div className="conversation-list">
+            {isLoading ? (
+              <div className="loading-stack" aria-label="Loading conversations">
+                <span />
+                <span />
+                <span />
+              </div>
+            ) : null}
             {conversations.map((conversation) => (
               <button
                 className={`conversation-item ${
                   conversation.id === activeConversation?.id ? "conversation-item--active" : ""
                 }`}
                 key={conversation.id}
+                disabled={isSending}
                 onClick={() => handleSelectConversation(conversation.id)}
                 type="button"
               >
@@ -239,6 +253,7 @@ export function ChatPage() {
       <form className="composer" onSubmit={activeConversation ? handleSendMessage : handleStartConversation}>
         <input
           placeholder="Ask ResolveAI about an IT issue..."
+          disabled={isSending}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
         />

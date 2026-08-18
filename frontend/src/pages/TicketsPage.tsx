@@ -127,7 +127,12 @@ export function TicketsPage() {
   return (
     <>
       <PageHeader title="Tickets" description="Track escalated issues and support ownership across IT teams." />
-      {error ? <div className="alert alert--error">{error}</div> : null}
+      {error ? (
+        <div className="alert alert--error">
+          <strong>Ticket API unavailable</strong>
+          <span>{error}</span>
+        </div>
+      ) : null}
       <div className="ticket-workspace">
         <section className="panel ticket-list-panel">
           <div className="panel-header">
@@ -135,6 +140,13 @@ export function TicketsPage() {
             <span>{isLoading ? "Loading..." : `${tickets.length} total`}</span>
           </div>
           <div className="table-list">
+            {isLoading ? (
+              <div className="loading-stack" aria-label="Loading tickets">
+                <span />
+                <span />
+                <span />
+              </div>
+            ) : null}
             {tickets.map((ticket) => (
               <button
                 className={`ticket-row ${ticket.id === selectedTicket?.id ? "ticket-row--active" : ""}`}
@@ -181,6 +193,7 @@ export function TicketsPage() {
                 Status
                 <select
                   value={selectedTicket.status}
+                  disabled={isSaving}
                   onChange={(event) => handleStatusChange(selectedTicket, event.target.value as TicketStatus)}
                 >
                   {Object.entries(statusLabels).map(([value, label]) => (
@@ -190,7 +203,12 @@ export function TicketsPage() {
                   ))}
                 </select>
               </label>
-              <button className="secondary-button danger-button" onClick={() => handleDelete(selectedTicket)} type="button">
+              <button
+                className="secondary-button danger-button"
+                disabled={isSaving}
+                onClick={() => handleDelete(selectedTicket)}
+                type="button"
+              >
                 Delete ticket
               </button>
             </>
@@ -210,6 +228,7 @@ export function TicketsPage() {
             <input
               minLength={3}
               required
+              disabled={isSaving}
               value={formState.title}
               onChange={(event) => setFormState((current) => ({ ...current, title: event.target.value }))}
             />
@@ -218,6 +237,7 @@ export function TicketsPage() {
             Category
             <input
               required
+              disabled={isSaving}
               value={formState.category}
               onChange={(event) => setFormState((current) => ({ ...current, category: event.target.value }))}
             />
@@ -226,6 +246,7 @@ export function TicketsPage() {
             Priority
             <select
               value={formState.priority}
+              disabled={isSaving}
               onChange={(event) => setFormState((current) => ({ ...current, priority: event.target.value as TicketPriority }))}
             >
               {Object.entries(priorityLabels).map(([value, label]) => (
@@ -238,6 +259,7 @@ export function TicketsPage() {
           <label className="field-group">
             Assignee
             <input
+              disabled={isSaving}
               value={formState.assignee}
               onChange={(event) => setFormState((current) => ({ ...current, assignee: event.target.value }))}
             />
@@ -247,6 +269,7 @@ export function TicketsPage() {
             <textarea
               minLength={5}
               required
+              disabled={isSaving}
               value={formState.description}
               onChange={(event) => setFormState((current) => ({ ...current, description: event.target.value }))}
             />

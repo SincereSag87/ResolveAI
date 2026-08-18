@@ -152,14 +152,20 @@ export function KnowledgeBasePage() {
   return (
     <>
       <PageHeader title="Knowledge Base" description="Manage internal support articles that ResolveAI will search and cite." />
-      {error ? <div className="alert alert--error">{error}</div> : null}
+      {error ? (
+        <div className="alert alert--error">
+          <strong>Knowledge Base API unavailable</strong>
+          <span>{error}</span>
+        </div>
+      ) : null}
       <section className="knowledge-toolbar">
         <input
           placeholder="Search articles..."
+          disabled={isLoading}
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
         />
-        <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}>
+        <select disabled={isLoading} value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}>
           <option value="all">All categories</option>
           {categories.map((category) => (
             <option key={category} value={category}>
@@ -170,6 +176,13 @@ export function KnowledgeBasePage() {
       </section>
       <div className="knowledge-workspace">
         <section className="card-grid knowledge-card-grid">
+          {isLoading ? (
+            <div className="loading-stack" aria-label="Loading articles">
+              <span />
+              <span />
+              <span />
+            </div>
+          ) : null}
           {filteredArticles.map((article) => (
             <button
               className={`article-card article-card--button ${
@@ -217,6 +230,7 @@ export function KnowledgeBasePage() {
                 Status
                 <select
                   value={selectedArticle.status}
+                  disabled={isSaving}
                   onChange={(event) => handleStatusChange(selectedArticle, event.target.value as ArticleStatus)}
                 >
                   {Object.entries(statusLabels).map(([value, label]) => (
@@ -228,6 +242,7 @@ export function KnowledgeBasePage() {
               </label>
               <button
                 className="secondary-button danger-button"
+                disabled={isSaving}
                 onClick={() => handleDeleteArticle(selectedArticle)}
                 type="button"
               >
@@ -250,6 +265,7 @@ export function KnowledgeBasePage() {
             <input
               minLength={3}
               required
+              disabled={isSaving}
               value={formState.title}
               onChange={(event) => setFormState((current) => ({ ...current, title: event.target.value }))}
             />
@@ -259,6 +275,7 @@ export function KnowledgeBasePage() {
             <input
               minLength={2}
               required
+              disabled={isSaving}
               value={formState.category}
               onChange={(event) => setFormState((current) => ({ ...current, category: event.target.value }))}
             />
@@ -267,6 +284,7 @@ export function KnowledgeBasePage() {
             Status
             <select
               value={formState.status}
+              disabled={isSaving}
               onChange={(event) => setFormState((current) => ({ ...current, status: event.target.value as ArticleStatus }))}
             >
               {Object.entries(statusLabels).map(([value, label]) => (
@@ -279,6 +297,7 @@ export function KnowledgeBasePage() {
           <label className="field-group">
             Source URL
             <input
+              disabled={isSaving}
               value={formState.source_url}
               onChange={(event) => setFormState((current) => ({ ...current, source_url: event.target.value }))}
             />
@@ -288,6 +307,7 @@ export function KnowledgeBasePage() {
             <textarea
               minLength={5}
               required
+              disabled={isSaving}
               value={formState.summary}
               onChange={(event) => setFormState((current) => ({ ...current, summary: event.target.value }))}
             />
@@ -297,6 +317,7 @@ export function KnowledgeBasePage() {
             <textarea
               minLength={10}
               required
+              disabled={isSaving}
               value={formState.body}
               onChange={(event) => setFormState((current) => ({ ...current, body: event.target.value }))}
             />

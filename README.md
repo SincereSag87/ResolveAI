@@ -51,6 +51,11 @@ CORS_ORIGINS=["https://your-vercel-domain.vercel.app"]
 
 Use hosted PostgreSQL for Vercel, such as Neon, Supabase, AWS Aurora Postgres, or a Vercel Marketplace Postgres integration. Run Alembic migrations against that hosted database before using the API.
 
+Deployment support docs:
+
+- [Hosted Postgres migration runbook](docs/deployment-runbook.md)
+- [Production smoke-test checklist](docs/production-smoke-test.md)
+
 ## Start Local Database
 
 ```powershell
@@ -64,6 +69,14 @@ docker compose up -d postgres
 cd C:\Projects\ResolveAI\backend
 .\.venv\Scripts\Activate.ps1
 alembic upgrade head
+```
+
+## Run Backend Tests
+
+```powershell
+cd C:\Projects\ResolveAI\backend
+.\.venv\Scripts\Activate.ps1
+pytest
 ```
 
 ## Start Frontend
