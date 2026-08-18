@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { addMessage, createConversation, getConversation, listConversations } from "../api/conversations";
 import type { Conversation, ConversationSummary } from "../api/conversations";
+import { listKnowledgeArticles, searchKnowledgeArticles } from "../api/knowledgeArticles";
+import type { KnowledgeArticle } from "../api/knowledgeArticles";
 import { PageHeader } from "../components/PageHeader";
 
 export function ChatPage() {
@@ -11,6 +13,8 @@ export function ChatPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [articles, setArticles] = useState<KnowledgeArticle[]>([]);
+  const [relatedArticles, setRelatedArticles] = useState<KnowledgeArticle[]>([]);
 
   const activeSummary = useMemo(
     () => conversations.find((conversation) => conversation.id === activeConversation?.id),
@@ -20,15 +24,17 @@ export function ChatPage() {
   useEffect(() => {
     let isMounted = true;
 
-    listConversations()
+    Promise.all([listConversations(), listKnowledgeArticles()])
       .then(async (data) => {
         if (!isMounted) {
           return;
         }
 
-        setConversations(data);
-        if (data[0]) {
-          const conversation = await getConversation(data[0].id);
+        const [conversationData, articleData] = data;
+        setConversations(conversationData);
+        setArticles(articleData);
+        if (conversationData[0]) {
+          const conversation = await getConversation(conversationData[0].id);
           if (isMounted) {
             setActiveConversation(conversation);
           }
@@ -50,10 +56,54 @@ export function ChatPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+    const latestEmployeeMessage = [...(activeConversation?.messages ?? [])]
+      .reverse()
+      .find((message) => message.role === "employee");
+
+    if (!latestEmployeeMessage) {
+      setRelatedArticles([]);
+      return;
+    }
+
+    searchKnowledgeArticles(latestEmployeeMessage.content)
+      .then((matches) => {
+        if (isMounted) {
+          setRelatedArticles(matches);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setRelatedArticles([]);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeConversation]);
+
   async function refreshConversationList(selectedConversation: Conversation) {
-    const summaries = await listConversations();
+    const [summaries, articleData] = await Promise.all([listConversations(), listKnowledgeArticles()]);
     setConversations(summaries);
+    setArticles(articleData);
     setActiveConversation(selectedConversation);
+  }
+
+  function getCitationArticles(sourceType: string | null, sourceId: string | null) {
+    if (sourceType !== "knowledge_article" || !sourceId) {
+      return [];
+    }
+
+    const citationIds = sourceId
+      .split(",")
+      .map((id) => Number(id))
+      .filter((id) => Number.isInteger(id));
+
+    return citationIds
+      .map((id) => articles.find((article) => article.id === id))
+      .filter((article): article is KnowledgeArticle => Boolean(article));
   }
 
   async function handleSelectConversation(conversationId: number) {
@@ -158,11 +208,16 @@ export function ChatPage() {
           {activeConversation?.messages.map((message) => (
             <div className={`chat-message chat-message--${message.role}`} key={message.id}>
               <p>{message.content}</p>
-              {message.source_type ? (
-                <small>
-                  Source placeholder: {message.source_type}
-                  {message.source_id ? ` / ${message.source_id}` : ""}
-                </small>
+              {getCitationArticles(message.source_type, message.source_id).length > 0 ? (
+                <div className="citation-list">
+                  {getCitationArticles(message.source_type, message.source_id).map((article) => (
+                    <a href={`/knowledge-base?articleId=${article.id}`} key={article.id}>
+                      {article.title}
+                    </a>
+                  ))}
+                </div>
+              ) : message.source_type ? (
+                <small>{message.source_type === "mock" ? "No KB citation matched" : message.source_type}</small>
               ) : null}
             </div>
           ))}
@@ -171,15 +226,14 @@ export function ChatPage() {
           ) : null}
         </div>
         <aside className="source-panel">
-          <h2>Source placeholders</h2>
-          <div className="source-item">
-            <strong>VPN credential reset guide</strong>
-            <span>Knowledge Base - Networking</span>
-          </div>
-          <div className="source-item">
-            <strong>Identity password sync FAQ</strong>
-            <span>Knowledge Base - IAM</span>
-          </div>
+          <h2>Related articles</h2>
+          {relatedArticles.map((article) => (
+            <a className="source-item source-item--link" href={`/knowledge-base?articleId=${article.id}`} key={article.id}>
+              <strong>{article.title}</strong>
+              <span>{article.category}</span>
+            </a>
+          ))}
+          {relatedArticles.length === 0 ? <p className="empty-state">No related articles found yet.</p> : null}
         </aside>
       </section>
       <form className="composer" onSubmit={activeConversation ? handleSendMessage : handleStartConversation}>

@@ -23,7 +23,7 @@ export type KnowledgeArticleCreatePayload = {
 
 export type KnowledgeArticleUpdatePayload = Partial<KnowledgeArticleCreatePayload>;
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? "http://127.0.0.1:8000" : "");
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}/api${path}`, {
@@ -48,6 +48,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export function listKnowledgeArticles(): Promise<KnowledgeArticle[]> {
   return request<KnowledgeArticle[]>("/knowledge-articles");
+}
+
+export function searchKnowledgeArticles(query: string): Promise<KnowledgeArticle[]> {
+  return request<KnowledgeArticle[]>(`/knowledge-articles/search?q=${encodeURIComponent(query)}`);
 }
 
 export function createKnowledgeArticle(payload: KnowledgeArticleCreatePayload): Promise<KnowledgeArticle> {

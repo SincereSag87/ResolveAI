@@ -17,6 +17,11 @@ def list_articles(db: Session = Depends(get_db)) -> list[KnowledgeArticleRead]:
     return knowledge_article_service.list_articles(db)
 
 
+@router.get("/search", response_model=list[KnowledgeArticleRead])
+def search_articles(q: str, db: Session = Depends(get_db)) -> list[KnowledgeArticleRead]:
+    return knowledge_article_service.search_articles(db, q)
+
+
 @router.post("", response_model=KnowledgeArticleRead, status_code=status.HTTP_201_CREATED)
 def create_article(
     article_data: KnowledgeArticleCreate,

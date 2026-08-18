@@ -31,7 +31,25 @@ Backend defaults are PostgreSQL-ready:
 postgresql+psycopg://resolveai:resolveai@localhost:5432/resolveai
 ```
 
-The frontend also has a built-in fallback API base URL of `http://127.0.0.1:8000`.
+The frontend uses `http://127.0.0.1:8000` during local Vite development and same-origin `/api` in production unless `VITE_API_BASE_URL` is set.
+
+## Vercel Deployment
+
+This repo includes Vercel configuration for the Vite frontend and FastAPI backend:
+
+- `vercel.json` builds `frontend/` and serves `frontend/dist`
+- `api/index.py` exposes the FastAPI app as a Vercel Python Function
+- Root `requirements.txt` points Vercel to backend Python dependencies
+- `.python-version` pins Python 3.12
+
+Required Vercel environment variables:
+
+```text
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:PORT/DATABASE
+CORS_ORIGINS=["https://your-vercel-domain.vercel.app"]
+```
+
+Use hosted PostgreSQL for Vercel, such as Neon, Supabase, AWS Aurora Postgres, or a Vercel Marketplace Postgres integration. Run Alembic migrations against that hosted database before using the API.
 
 ## Start Local Database
 
@@ -94,6 +112,7 @@ POST   /api/conversations/{conversation_id}/messages
 
 ```text
 GET    /api/knowledge-articles
+GET    /api/knowledge-articles/search?q=...
 POST   /api/knowledge-articles
 GET    /api/knowledge-articles/{article_id}
 PATCH  /api/knowledge-articles/{article_id}

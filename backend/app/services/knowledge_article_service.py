@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.models.knowledge_article import KnowledgeArticle
@@ -6,6 +7,36 @@ from app.schemas.knowledge_article import KnowledgeArticleCreate, KnowledgeArtic
 
 def list_articles(db: Session) -> list[KnowledgeArticle]:
     return db.query(KnowledgeArticle).order_by(KnowledgeArticle.updated_at.desc(), KnowledgeArticle.id.desc()).all()
+
+
+def search_articles(db: Session, query: str, limit: int = 5) -> list[KnowledgeArticle]:
+    normalized_query = query.strip()
+    if not normalized_query:
+        return []
+
+    terms = [term for term in normalized_query.split() if len(term) > 2]
+    if not terms:
+        terms = [normalized_query]
+
+    search_clauses = []
+    for term in terms:
+        pattern = f"%{term}%"
+        search_clauses.extend(
+            [
+                KnowledgeArticle.title.ilike(pattern),
+                KnowledgeArticle.category.ilike(pattern),
+                KnowledgeArticle.summary.ilike(pattern),
+                KnowledgeArticle.body.ilike(pattern),
+            ]
+        )
+
+    return (
+        db.query(KnowledgeArticle)
+        .filter(or_(*search_clauses))
+        .order_by(KnowledgeArticle.status.desc(), KnowledgeArticle.updated_at.desc(), KnowledgeArticle.id.desc())
+        .limit(limit)
+        .all()
+    )
 
 
 def get_article(db: Session, article_id: int) -> KnowledgeArticle | None:

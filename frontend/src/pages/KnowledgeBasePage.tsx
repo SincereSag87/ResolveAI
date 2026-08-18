@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   createKnowledgeArticle,
   deleteKnowledgeArticle,
@@ -40,6 +41,7 @@ const initialFormState: ArticleFormState = {
 };
 
 export function KnowledgeBasePage() {
+  const [searchParams] = useSearchParams();
   const [articles, setArticles] = useState<KnowledgeArticle[]>([]);
   const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
   const [formState, setFormState] = useState<ArticleFormState>(initialFormState);
@@ -80,8 +82,13 @@ export function KnowledgeBasePage() {
         if (!isMounted) {
           return;
         }
+        const linkedArticleId = Number(searchParams.get("articleId"));
         setArticles(data);
-        setSelectedArticleId(data[0]?.id ?? null);
+        setSelectedArticleId(
+          Number.isInteger(linkedArticleId) && data.some((article) => article.id === linkedArticleId)
+            ? linkedArticleId
+            : (data[0]?.id ?? null),
+        );
       })
       .catch((requestError: Error) => {
         if (isMounted) {
@@ -97,7 +104,7 @@ export function KnowledgeBasePage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [searchParams]);
 
   async function handleCreateArticle(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
