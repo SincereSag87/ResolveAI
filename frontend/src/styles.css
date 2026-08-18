@@ -20,7 +20,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -72,6 +73,7 @@ button {
 .metric-card small,
 .source-item span,
 .article-card span,
+.ticket-detail-list dt,
 .page-header p {
   color: #6b7280;
 }
@@ -330,7 +332,10 @@ button {
 .composer input,
 .login-form input,
 .setting-item input,
-.setting-item select {
+.setting-item select,
+.field-group input,
+.field-group select,
+.field-group textarea {
   width: 100%;
   min-height: 44px;
   padding: 0 12px;
@@ -338,6 +343,12 @@ button {
   border-radius: 8px;
   color: #172033;
   background: #ffffff;
+}
+
+.field-group textarea {
+  min-height: 108px;
+  padding: 12px;
+  resize: vertical;
 }
 
 .article-card p {
@@ -416,6 +427,107 @@ button {
   font-weight: 700;
 }
 
+.alert {
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.alert--error {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.ticket-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: 20px;
+}
+
+.ticket-list-panel,
+.ticket-detail-panel {
+  align-self: start;
+}
+
+.ticket-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 64px;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid #eef2f7;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+}
+
+.ticket-row:first-child {
+  border-top: 0;
+}
+
+.ticket-row--active,
+.ticket-row:hover {
+  background: #f8fafc;
+}
+
+.ticket-detail-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.ticket-detail-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.ticket-detail-list dt {
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.ticket-detail-list dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ticket-description {
+  margin: 0 0 20px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.ticket-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field-group {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.field-group--wide {
+  grid-column: 1 / -1;
+}
+
+.danger-button {
+  margin-top: 14px;
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.empty-state {
+  margin: 14px 0 0;
+  color: #6b7280;
+}
+
 @media (max-width: 960px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -433,7 +545,9 @@ button {
   .metrics-grid,
   .card-grid,
   .settings-grid,
-  .chat-workspace {
+  .chat-workspace,
+  .ticket-workspace,
+  .ticket-form {
     grid-template-columns: 1fr;
   }
 }
@@ -454,6 +568,7 @@ button {
   }
 
   .table-row,
+  .ticket-row,
   .composer {
     grid-template-columns: 1fr;
   }

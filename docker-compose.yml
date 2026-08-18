@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: resolveai-postgres
+    environment:
+      POSTGRES_DB: resolveai
+      POSTGRES_USER: resolveai
+      POSTGRES_PASSWORD: resolveai
+    ports:
+      - "5432:5432"
+    volumes:
+      - resolveai-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resolveai -d resolveai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  resolveai-postgres-data:
