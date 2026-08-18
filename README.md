@@ -78,3 +78,24 @@ GET    /api/tickets/{ticket_id}
 PATCH  /api/tickets/{ticket_id}
 DELETE /api/tickets/{ticket_id}
 ```
+
+## Conversation API
+
+```text
+GET    /api/conversations
+POST   /api/conversations
+GET    /api/conversations/{conversation_id}
+PATCH  /api/conversations/{conversation_id}
+DELETE /api/conversations/{conversation_id}
+POST   /api/conversations/{conversation_id}/messages
+```
+
+## Knowledge Base API
+
+```text
+GET    /api/knowledge-articles
+POST   /api/knowledge-articles
+GET    /api/knowledge-articles/{article_id}
+PATCH  /api/knowledge-articles/{article_id}
+DELETE /api/knowledge-articles/{article_id}
+```

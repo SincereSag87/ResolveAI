@@ -281,7 +281,7 @@ button {
 
 .chat-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: 260px minmax(0, 1fr) 320px;
   gap: 20px;
 }
 
@@ -295,17 +295,90 @@ button {
   background: #edf3fb;
 }
 
+.conversation-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgb(17 24 39 / 6%);
+}
+
+.conversation-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.conversation-form input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.conversation-list {
+  display: grid;
+  gap: 8px;
+}
+
+.conversation-item {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #eef2f7;
+  border-radius: 8px;
+  color: inherit;
+  text-align: left;
+  background: #ffffff;
+}
+
+.conversation-item span,
+.chat-thread-header span,
+.chat-message small {
+  color: #6b7280;
+}
+
+.conversation-item--active,
+.conversation-item:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.chat-thread-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #dbe5f2;
+}
+
 .chat-message {
+  display: grid;
+  gap: 8px;
   max-width: 760px;
   padding: 14px 16px;
   border-radius: 8px;
   background: #ffffff;
 }
 
+.chat-message p {
+  margin: 0;
+}
+
 .chat-message--employee {
   justify-self: end;
   color: #ffffff;
   background: #2563eb;
+}
+
+.chat-message--employee small {
+  color: #dbeafe;
 }
 
 .source-panel {
@@ -354,6 +427,83 @@ button {
 .article-card p {
   margin: 0;
   color: #4b5563;
+}
+
+.knowledge-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
+}
+
+.knowledge-toolbar input,
+.knowledge-toolbar select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #172033;
+  background: #ffffff;
+}
+
+.knowledge-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.75fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.knowledge-card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.article-card--button {
+  width: 100%;
+  color: inherit;
+  text-align: left;
+}
+
+.article-card--button:hover,
+.article-card--active {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.article-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.knowledge-detail-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-wide {
+  grid-column: 1 / -1;
+}
+
+.article-summary {
+  margin: 0;
+  color: #374151;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.article-body {
+  padding-top: 16px;
+  border-top: 1px solid #eef2f7;
+  color: #374151;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.article-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .card-grid,
@@ -547,7 +697,11 @@ button {
   .settings-grid,
   .chat-workspace,
   .ticket-workspace,
-  .ticket-form {
+  .ticket-form,
+  .knowledge-toolbar,
+  .knowledge-workspace,
+  .knowledge-card-grid,
+  .article-form {
     grid-template-columns: 1fr;
   }
 }
