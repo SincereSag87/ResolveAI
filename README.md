@@ -35,6 +35,8 @@ The frontend uses `http://127.0.0.1:8000` during local Vite development and same
 
 ## Vercel Deployment
 
+Live app: https://resolve-ai-six.vercel.app/
+
 This repo includes Vercel configuration for the Vite frontend and FastAPI backend:
 
 - `vercel.json` builds `frontend/` and serves `frontend/dist`
